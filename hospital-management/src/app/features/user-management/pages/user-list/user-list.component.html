@@ -1,0 +1,188 @@
+<div class="bg-white rounded-lg shadow-md p-6">
+
+  <!-- Page Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">User Management</h1>
+    <p class="text-gray-500">Manage all hospital staff and user accounts</p>
+  </div>
+
+  <!-- Filters and Add User Button -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <div class="relative">
+        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        <input type="text" placeholder="Search users..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+    </div>
+    <button (click)="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-semibold">
+     <i class="fa-solid fa-plus"></i> Add New User
+    </button>
+  </div>
+
+  <!-- Users Table -->
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="bg-gray-50 text-left text-xs text-gray-500 uppercase font-semibold">
+          <th class="p-3">Name</th>
+          <th class="p-3">Email</th>
+          <th class="p-3">Role</th>
+          <th class="p-3">Status</th>
+          <th class="p-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let user of users" class="hover:bg-gray-50">
+          <td class="p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                {{ getUserInitials(user) }}
+              </div>
+              <div>
+                <div class="font-medium text-gray-800">{{ user.firstName }} {{ user.lastName }}</div>
+                <div class="text-sm text-gray-500">{{ user.username }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="p-3 text-gray-600">{{ user.email }}</td>
+          <td class="p-3">
+            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium uppercase">{{ user.roles.join(', ') }}</span>
+          </td>
+          <td class="p-3">
+            <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="user.enabled ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+              {{ user.enabled ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="p-3">
+            <div class="flex gap-3">
+              <button (click)="openEditModal(user)" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button (click)="onDeleteUser(user)" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="isTableLoading">
+          <td colspan="5" class="text-center p-6 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Loading users...</td>
+        </tr>
+        <tr *ngIf="!isTableLoading && users.length === 0">
+          <td colspan="5" class="text-center p-6 text-gray-500 font-semibold">No users found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex items-center justify-between pt-4 mt-4 border-t border-gray-200">
+    <div class="text-sm text-gray-600">
+      Showing <span class="font-medium">{{users.length > 0 ? 1 : 0}}</span> to <span class="font-medium">{{users.length}}</span> of <span class="font-medium">{{users.length}}</span> results
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- DYNAMIC MODAL FOR ADDING AND EDITING -->
+<!-- ================================================================ -->
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 relative">
+    <div *ngIf="isModalLoading" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+        <i class="fas fa-spinner fa-spin text-blue-600 text-4xl"></i>
+    </div>
+    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+          <i class="fa-solid text-blue-600 text-xl" [ngClass]="editingUser ? 'fa-user-pen' : 'fa-user-plus'"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">{{ editingUser ? 'Edit User' : 'Add New User' }}</h2>
+          <p class="text-sm text-gray-500">{{ editingUser ? 'Update details for ' + editingUser.username : 'Fill in the details for a new user account' }}</p>
+        </div>
+      </div>
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-2xl"></i></button>
+    </div>
+
+    <div class="p-6">
+      <form [formGroup]="addUserForm" (ngSubmit)="onFormSubmit()" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
+            <input type="text" formControlName="firstName" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter first name">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
+            <input type="text" formControlName="lastName" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter last name">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Username <span class="text-red-500">*</span></label>
+            <input type="text" formControlName="username" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter username">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
+            <input type="email" formControlName="email" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter email address">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+            <input type="text" formControlName="mobile" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter mobile number">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Password <span *ngIf="!editingUser" class="text-red-500">*</span></label>
+            <input type="password" formControlName="password" class="w-full px-3 py-2 border border-gray-300 rounded-md" [placeholder]="editingUser ? 'Leave blank to keep current password' : 'Enter password'">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password <span *ngIf="!editingUser" class="text-red-500">*</span></label>
+            <input type="password" formControlName="confirmPassword" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Confirm password">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Role <span class="text-red-500">*</span></label>
+            <select formControlName="role" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+              <option value="" disabled>Select role</option>
+              <option value="ADMIN">ADMIN</option>
+              <option value="DOCTOR">DOCTOR</option>
+              <option value="NURSE">NURSE</option>
+              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+            <select formControlName="department" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+              <option value="" disabled>Select department</option>
+              <option value="Cardiology">Cardiology</option>
+              <option value="Neurology">Neurology</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+              <label class="mr-4 font-medium text-sm">Status</label>
+              <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                  <input type="checkbox" formControlName="active" id="status-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                  <label for="status-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+              </div>
+              <label for="status-toggle" class="text-xs text-gray-700">Active</label>
+          </div>
+          
+          <!-- --- >> FIX: THIS CHECKBOX WAS MISSING FROM YOUR HTML << --- -->
+          <div *ngIf="!editingUser" class="flex items-center">
+            <input type="checkbox" formControlName="agreement" id="agreement" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+            <label for="agreement" class="ml-2 block text-sm text-gray-900">Agree to Terms & Conditions <span class="text-red-500">*</span></label>
+          </div>
+        </div>
+        
+        <div class="pt-4 border-t border-gray-200 flex justify-end gap-3">
+          <button type="button" (click)="resetForm()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-semibold">
+            <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+          </button>
+          <button type="button" (click)="closeModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-semibold">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="addUserForm.invalid || isLoading" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold flex items-center disabled:bg-gray-400">
+             <span *ngIf="!isLoading">
+                <i class="fa-solid fa-save mr-1"></i>
+                {{ editingUser ? 'Update User' : 'Save User' }}
+             </span>
+             <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin mr-2"></i> Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

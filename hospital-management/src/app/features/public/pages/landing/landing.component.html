@@ -1,0 +1,114 @@
+<!-- Header Section -->
+<header id="header" class="sticky top-0 z-50 bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="mr-10">
+                    <span class="flex items-center cursor-pointer">
+                        <i class="fa-solid fa-hospital text-primary-600 text-3xl mr-2"></i>
+                        <span class="font-bold text-xl text-primary-800">MediCare</span>
+                    </span>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <span class="font-medium text-primary-900 hover:text-primary-600 transition cursor-pointer">Home</span>
+                    <span class="font-medium text-gray-600 hover:text-primary-600 transition cursor-pointer">Features</span>
+                    <span class="font-medium text-gray-600 hover:text-primary-600 transition cursor-pointer">Modules</span>
+                    <span class="font-medium text-gray-600 hover:text-primary-600 transition cursor-pointer">Pricing</span>
+                    <span class="font-medium text-gray-600 hover:text-primary-600 transition cursor-pointer">Contact Us</span>
+                </nav>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <span class="hidden md:inline-flex px-4 py-2 text-primary-600 font-medium border border-primary-600 rounded-md hover:bg-primary-50 transition cursor-pointer">Request Demo</span>
+                <!-- LOGIN BUTTON -->
+                <a routerLink="/auth/login" class="px-4 py-2 border border-transparent text-primary-600 font-medium rounded-md hover:bg-primary-50 transition cursor-pointer">Login</a>
+                <!-- NEW REGISTER BUTTON ADDED HERE -->
+                <a routerLink="/auth/signup" class="px-4 py-2 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 transition cursor-pointer">Register</a>
+                <button class="md:hidden text-gray-500 hover:text-gray-700">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+        </div>
+        </div>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section id="hero" class="bg-gradient-to-br from-primary-50 to-blue-50">
+    <div class="container mx-auto px-4 py-16">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+                    All-in-One Hospital & Clinic Management Software
+                </h1>
+                <p class="text-xl text-gray-700 mb-8">
+                    Manage appointments, billing, inventory, and patient data with 100% security and ease.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <span class="px-6 py-3 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 transition text-center cursor-pointer">
+                        Get Started
+                    </span>
+                    <span class="px-6 py-3 border border-gray-300 bg-white text-gray-700 font-medium rounded-md hover:bg-gray-50 transition flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-play text-primary-600 mr-2"></i>
+                        Watch Demo
+                    </span>
+                </div>
+            </div>
+            <div class="md:w-1/2">
+                <!-- Image path ko 'assets' folder se point kiya gaya hai -->
+                <img class="rounded-lg shadow-xl" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/a61d94fa32-6ee66a3df154f6eb9fdd.png"alt="Hospital Management System">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Snapshot Section -->
+<section id="features-snapshot" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">Key Features</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+                        <i class="fa-solid fa-calendar-check text-primary-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg">Appointment Booking</h3>
+                </div>
+                <p class="text-gray-600">Streamline scheduling with multi-channel booking system.</p>
+            </div>
+            <!-- Other features... -->
+             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+                        <i class="fa-solid fa-file-invoice-dollar text-primary-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg">Billing & Payments</h3>
+                </div>
+                <p class="text-gray-600">Manage invoices, insurance claims, and online payments.</p>
+            </div>
+             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+                        <i class="fa-solid fa-user-md text-primary-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg">Patient Records</h3>
+                </div>
+                <p class="text-gray-600">Secure digital patient history and medical records.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ... Baaki saare sections (Modules, Benefits, etc.) yahan paste karein ... -->
+<!-- ... Paste all other sections (Modules, Benefits, etc.) here ... -->
+
+<!-- Footer Section -->
+<footer id="footer" class="bg-gray-800 text-gray-200 py-12">
+    <div class="container mx-auto px-4">
+        <!-- ... Footer ka content yahan paste karein ... -->
+        <!-- ... Paste footer content here ... -->
+        <div class="mt-12 pt-8 border-t border-gray-700 text-center text-gray-400">
+            <p>© 2024 MediCare Hospital Management Software. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

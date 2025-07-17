@@ -1,0 +1,135 @@
+<div class="p-6 bg-gray-100 h-full">
+  <div class="flex flex-col md:flex-row gap-6 h-full">
+
+    <!-- User Search & Selection Panel (Left) -->
+    <div class="w-full md:w-1/3 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col">
+      <div class="p-4 border-b border-gray-200"><h2 class="text-lg font-semibold text-gray-800 mb-4">Find Users</h2></div>
+      <div class="overflow-y-auto flex-1">
+        <div *ngIf="isUserListLoading" class="p-6 text-center text-gray-500">
+          <i class="fas fa-spinner fa-spin mr-2"></i> Loading Users...
+        </div>
+        <div *ngIf="!isUserListLoading && users.length === 0" class="p-6 text-center text-gray-500">
+          <i class="fas fa-users-slash mr-2"></i> No users found.
+        </div>
+        <div *ngIf="!isUserListLoading && users.length > 0">
+          <div *ngFor="let user of users" (click)="selectUser(user)" class="border-b border-gray-200 p-3 hover:bg-gray-50 cursor-pointer" [ngClass]="{'bg-primary-50': selectedUser?.id === user.id}">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-medium text-gray-800">{{ user.firstName }} {{ user.lastName }}</h3>
+                <p class="text-sm text-gray-500">{{ user.email }}</p>
+              </div>
+              <span class="text-xs px-2 py-1 rounded" [ngClass]="user.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                {{ user.enabled ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1">
+              <span *ngFor="let role of user.roles" class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">{{ role }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-3 border-t border-gray-200 flex justify-between items-center">
+        <button class="text-gray-500 hover:text-gray-700 disabled:opacity-50" disabled><i class="fa-solid fa-chevron-left mr-1"></i> Previous</button>
+        <span class="text-sm text-gray-500">Page 1 of 1</span>
+        <button class="text-primary-600 hover:text-primary-700">Next <i class="fa-solid fa-chevron-right ml-1"></i></button>
+      </div>
+    </div>
+
+    <!-- Role Assignment Panel (Right) -->
+    <div class="w-full md:w-2/3">
+      <div *ngIf="selectedUser; else noUserSelected" class="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col">
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-lg font-semibold text-gray-800 mb-1">Manage User Roles</h2>
+              <p class="text-sm text-gray-500">Assign or remove roles for {{ selectedUser.firstName }} {{ selectedUser.lastName }}</p>
+            </div>
+            <div class="flex space-x-2">
+              <!-- === >> NEW: Add click handlers and dynamic states << === -->
+              <button (click)="onResetChanges()" class="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">
+                <i class="fa-solid fa-rotate mr-1"></i> Reset
+              </button>
+              <button (click)="onSaveChanges()" [disabled]="isSaving" class="px-3 py-1.5 bg-primary-600 rounded text-sm text-white hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center min-w-[120px] justify-center">
+                <span *ngIf="!isSaving">
+                  <i class="fa-solid fa-floppy-disk mr-1"></i> Save Changes
+                </span>
+                <span *ngIf="isSaving">
+                  <i class="fas fa-spinner fa-spin mr-2"></i> Saving...
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex items-center">
+            <div class="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xl font-semibold">
+              {{ getUserInitials(selectedUser) }}
+            </div>
+            <div class="ml-4">
+              <h3 class="text-xl font-semibold text-gray-800">{{ selectedUser.firstName }} {{ selectedUser.lastName }}</h3>
+              <p class="text-gray-600">{{ selectedUser.email }}</p>
+              <div class="flex mt-1">
+                <span class="text-xs px-2 py-0.5 rounded mr-2" [ngClass]="selectedUser.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                  {{ selectedUser.enabled ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-4 flex-1 overflow-y-auto">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- Available Roles -->
+            <div class="border border-gray-200 rounded-lg flex flex-col">
+              <div class="p-3 bg-gray-50 border-b border-gray-200"><h3 class="font-medium text-gray-700">Available Roles</h3></div>
+              <div class="p-2 flex-1 overflow-y-auto">
+                <div *ngIf="isRolesLoading" class="text-center p-4 text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading Roles...</div>
+                <div *ngIf="!isRolesLoading">
+                    <div *ngFor="let role of availableRoles" class="p-2 hover:bg-gray-50 rounded flex items-center">
+                      <input type="checkbox" class="mr-2 h-4 w-4" [id]="'role-' + role.id" (change)="onAvailableRoleSelect(role, $event)">
+                      <label [for]="'role-' + role.id" class="flex-1 cursor-pointer">
+                        <div class="font-medium text-gray-800">{{ role.name }}</div>
+                        <div class="text-xs text-gray-500">{{ role.description }}</div>
+                      </label>
+                    </div>
+                </div>
+              </div>
+              <div class="p-3 border-t border-gray-200">
+                <button (click)="addSelectedRoles()" [disabled]="selectedAvailableRoles.size === 0" class="w-full py-2 bg-primary-50 text-primary-700 rounded border border-primary-200 hover:bg-primary-100 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed">
+                  <i class="fa-solid fa-plus mr-1"></i> Add Selected Roles
+                </button>
+              </div>
+            </div>
+            
+            <!-- Assigned Roles -->
+            <div class="border border-gray-200 rounded-lg flex flex-col">
+              <div class="p-3 bg-gray-50 border-b border-gray-200"><h3 class="font-medium text-gray-700">Assigned Roles</h3></div>
+              <div class="p-3 flex-1 overflow-y-auto">
+                <div *ngFor="let role of assignedRoles" class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+                  <div>
+                    <div class="font-medium text-gray-800">{{ role.name }}</div>
+                    <div class="text-xs text-gray-600">{{ role.description }}</div>
+                  </div>
+                  <button (click)="removeAssignedRole(role)" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div *ngIf="assignedRoles.length === 0" class="p-2 border border-dashed border-gray-300 rounded-lg text-center text-gray-500 text-sm">
+                  No roles assigned.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noUserSelected>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex items-center justify-center">
+            <div class="text-center text-gray-500">
+                <i class="fa-solid fa-hand-pointer text-4xl mb-4"></i>
+                <h3 class="text-lg font-semibold">Select a User</h3>
+                <p>Please select a user from the left panel to manage their roles.</p>
+            </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
